@@ -51,13 +51,19 @@ class BookController extends Controller
     public function update(Request $request, Book $Book)
     {
         $data = request()->validate([
-            'product_name' => 'required',
-            'product_desc' => 'required',
-            'product_qty' => 'required',
+            'title' => 'required',
+            'author' => 'required',
+            'image' => 'required|image|mimes:jpg,bmp,png',
+            'publish_date' => 'required',
+            'cost' => 'required',
+            'short_description' => 'required',
+            'description' => 'required',
+            'is_active' => 'required',
+            'stock' => 'required',
         ]);
 
         $Book->update($data);
-        return redirect()->route('Books.index')->with('success','Updated Successfully.');
+     
     }
 
 
