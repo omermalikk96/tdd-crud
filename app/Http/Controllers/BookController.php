@@ -10,7 +10,7 @@ class BookController extends Controller
 {
     public function index()
     {
-        return view('books.index');
+        return view('welcome');
     }
 
     public function create()
@@ -33,8 +33,8 @@ class BookController extends Controller
         ]);
        
             Book::create($request->all());
+            return view('welcome');
         
-        // return redirect()->route('Books.index')->with('success','Created Successfully.');
     }
 
     public function show(Book $Book)
@@ -63,13 +63,15 @@ class BookController extends Controller
         ]);
 
         $Book->update($data);
-     
+        return view('welcome');
+        
     }
 
 
     public function destroy(Book $Book)
     {
         $Book->delete();
-        // return redirect()->route('Books.index')->with('success','Student deleted successfully.');
+        return view('welcome');
+
     }
 }

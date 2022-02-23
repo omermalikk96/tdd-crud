@@ -40,7 +40,7 @@ class BookTest extends TestCase
             'is_active' => 0,
             'stock' => '50',
         ]);
-        $response->assertOk();
+        $response->assertStatus(200);
        
     }
 
@@ -58,7 +58,7 @@ class BookTest extends TestCase
             'is_active' => 0,
             'stock' => '50',
         ]);
-        $this->assertGuest();
+        $response->assertStatus(302);
     }
     public function test_example_get_book_with_authenticated_user()
     {
@@ -70,13 +70,14 @@ class BookTest extends TestCase
         ]);
         $response = $this->assertAuthenticated();
         $response =$this->actingAs($user)->get('/books');
-        $this->assertAuthenticated();
+        $response->assertStatus(200);
+
     }
 
     public function test_example_get_book_with_unauthenticated_user()
     {
         $response =$this->get('/books');
-        $this->assertGuest();
+        $response->assertStatus(302);
     }
    
     public function test_example_delete_with_authenticated_user()
@@ -105,6 +106,7 @@ class BookTest extends TestCase
         $this->assertCount(1, Book::all());
         $response = $this->actingAs($user)->delete('/books/'.$book->id);
         $this->assertCount(0, Book::all());
+        $response->assertOk();
        
     }
 
@@ -132,7 +134,7 @@ class BookTest extends TestCase
         $this->post('logout');
         $book=Book::first();
         $response = $this->delete('/books/'.$book->id);
-        $this->assertGuest();
+        $response->assertstatus(302);
        
     }
 
@@ -156,7 +158,7 @@ class BookTest extends TestCase
             'is_active' => 0,
             'stock' => '50',
         ]);
-        $response->assertOk();
+        $response->assertStatus(200);
         $book=Book::first();
         $response = $this->actingAs($user)->get('/books/'.$book->id);
         $response->assertOk();
@@ -186,7 +188,7 @@ class BookTest extends TestCase
         $this->post('logout');
         $book=Book::first();
         $response = $this->get('/books/'.$book->id);
-        $this->assertGuest();
+        $response->assertstatus(302);
        
     }
 
@@ -212,7 +214,7 @@ class BookTest extends TestCase
         ]);
         $response->assertOk();
         $book=Book::first();
-        $response = $this->actingAs($user)->patch('/books'.$book->id, [
+        $response = $this->actingAs($user)->patch('/books/'.$book->id, [
             'title' => 'demooooooo',
             'author' => 'demoooo',
             'image' => UploadedFile::fake()->image('avatar.jpg'),
@@ -223,10 +225,11 @@ class BookTest extends TestCase
             'is_active' => 0,
             'stock' => '50',
         ]);
-        $this->withoutExceptionHandling();
-        $this->assertEquals('demo', Book::first()->title);
-        $this->assertEquals('demo', Book::first()->author);
-    
+       
+        $this->assertEquals('demooooooo', Book::first()->title);
+        $this->assertEquals('demoooo', Book::first()->author);
+        $response->assertStatus(200);
+        
     }
     public function test_example_update_with_unauthenticated_user()
     {
@@ -250,8 +253,10 @@ class BookTest extends TestCase
         ]);
         $response->assertOk();
         $book=Book::first();
-        $this->post('logout');
-        $response = $this->patch('/books'.$book->id, [
+       
+        $response = $this->post('logout');
+        
+        $response = $this->patch('/books/'.$book->id, [
             'title' => 'demooooooo',
             'author' => 'demoooo',
             'image' => UploadedFile::fake()->image('avatar.jpg'),
@@ -262,9 +267,7 @@ class BookTest extends TestCase
             'is_active' => 0,
             'stock' => '50',
         ]);
-        $this->assertGuest();
-
-    
+        $response->assertStatus(302);
     }
 
   
