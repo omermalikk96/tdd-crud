@@ -58,18 +58,31 @@ class BookTest extends TestCase
             'is_active' => 0,
             'stock' => '50',
         ]);
-        $response->assertStatus(302);
+        $response = $this->assertCount(0, Book::all());
+       
     }
     public function test_example_get_book_with_authenticated_user()
     {
-        // $this->withoutExceptionHandling();
+
         $user = User::factory()->create();
         $response = $this->post('/login', [
             'email' => $user->email,
             'password' => 'password',
         ]);
+        Book::create([
+            'title' => 'demo',
+            'author' => 'demo',
+            'image' => UploadedFile::fake()->image('avatar.jpg'),
+            'publish_date' => '2022-02-21',
+            'cost' => '1000',
+            'short_description' => 'test',
+            'description' => 'test long',
+            'is_active' => 0,
+            'stock' => '50',
+        ]);
         $response = $this->assertAuthenticated();
         $response =$this->actingAs($user)->get('/books');
+        $response->assertViewHas('books');
         $response->assertStatus(200);
 
     }
@@ -255,7 +268,7 @@ class BookTest extends TestCase
         $book=Book::first();
        
         $response = $this->post('logout');
-        
+
         $response = $this->patch('/books/'.$book->id, [
             'title' => 'demooooooo',
             'author' => 'demoooo',

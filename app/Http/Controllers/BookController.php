@@ -10,7 +10,8 @@ class BookController extends Controller
 {
     public function index()
     {
-        return view('welcome');
+        $books = Book::all();
+        return view('welcome', compact('books'));
     }
 
     public function create()
@@ -32,7 +33,7 @@ class BookController extends Controller
             'stock' => 'required',
         ]);
        
-            Book::create($request->all());
+         $book =  Book::create($request->all());
             return view('welcome');
         
     }
