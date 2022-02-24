@@ -59,7 +59,8 @@ class BookTest extends TestCase
             'is_active' => 0,
             'stock' => '50',
         ]);
-        $response->assertStatus(302);
+        $response->assertRedirect('/login');
+
      
     }
     public function test_example_get_book_with_authenticated_user()
@@ -90,8 +91,9 @@ class BookTest extends TestCase
 
     public function test_example_get_book_with_unauthenticated_user()
     {
-        $response =$this->get('/books');
-        $response->assertStatus(302);
+        $response = $this->get('/books');
+        // $response->assertStatus(302);
+        $response->assertRedirect('/login');
     }
    
     public function test_example_delete_with_authenticated_user()
@@ -134,7 +136,8 @@ class BookTest extends TestCase
         ]);
 
         $response = $this->delete('/books/'.$book->id);
-        $response->assertstatus(302);
+        $response->assertRedirect('/login');
+
        
     }
 
@@ -179,7 +182,7 @@ class BookTest extends TestCase
 
         $response = $this->get('/books/'.$book->id);
         $response->assertDontSeeText('demo');
-        $response->assertstatus(302);
+        $response->assertRedirect('/login');
        
     }
 
