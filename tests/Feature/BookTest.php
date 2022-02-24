@@ -60,7 +60,7 @@ class BookTest extends TestCase
             'stock' => '50',
         ]);
         $response->assertStatus(302);
-        $response = $this->assertCount(0, Book::all());
+     
     }
     public function test_example_get_book_with_authenticated_user()
     {
@@ -134,7 +134,6 @@ class BookTest extends TestCase
         ]);
 
         $response = $this->delete('/books/'.$book->id);
-        $this->assertCount(1, Book::all());
         $response->assertstatus(302);
        
     }
@@ -187,11 +186,7 @@ class BookTest extends TestCase
     public function test_example_update_with_authenticated_user()
     {
         $user = User::factory()->create();
-        // $response = $this->post('/login', [
-        //     'email' => $user->email,
-        //     'password' => 'password',
-        // ]);
-        // $response = $this->assertAuthenticated();
+       
         Storage::fake('avatars');
         $book = Book::create([
             'title' => 'demo',
