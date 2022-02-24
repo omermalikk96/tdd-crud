@@ -41,6 +41,7 @@ class BookTest extends TestCase
             'stock' => '50',
         ]);
         $response->assertStatus(200);
+        $response=$this->assertCount(1, Book::all());
        
     }
 
@@ -58,8 +59,8 @@ class BookTest extends TestCase
             'is_active' => 0,
             'stock' => '50',
         ]);
+        $response->assertStatus(302);
         $response = $this->assertCount(0, Book::all());
-       
     }
     public function test_example_get_book_with_authenticated_user()
     {
@@ -96,13 +97,9 @@ class BookTest extends TestCase
     public function test_example_delete_with_authenticated_user()
     {
         $user = User::factory()->create();
-        $response = $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'password',
-        ]);
-        $response = $this->assertAuthenticated();
+       
         Storage::fake('avatars');
-        $response = $this->actingAs($user)->post('/books', [
+        $book = Book::create([
             'title' => 'demo',
             'author' => 'demo',
             'image' => UploadedFile::fake()->image('avatar.jpg'),
@@ -113,9 +110,7 @@ class BookTest extends TestCase
             'is_active' => 0,
             'stock' => '50',
         ]);
-        $response->assertOk();
 
-        $book=Book::first();
         $this->assertCount(1, Book::all());
         $response = $this->actingAs($user)->delete('/books/'.$book->id);
         $this->assertCount(0, Book::all());
@@ -125,14 +120,8 @@ class BookTest extends TestCase
 
     public function test_example_delete_with_unauthenticated_user()
     {
-        $user = User::factory()->create();
-        $response = $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'password',
-        ]);
-        $response = $this->assertAuthenticated();
         Storage::fake('avatars');
-        $response = $this->actingAs($user)->post('/books', [
+        $book = Book::create([
             'title' => 'demo',
             'author' => 'demo',
             'image' => UploadedFile::fake()->image('avatar.jpg'),
@@ -143,10 +132,9 @@ class BookTest extends TestCase
             'is_active' => 0,
             'stock' => '50',
         ]);
-        $response->assertOk();
-        $this->post('logout');
-        $book=Book::first();
+
         $response = $this->delete('/books/'.$book->id);
+        $this->assertCount(1, Book::all());
         $response->assertstatus(302);
        
     }
@@ -154,13 +142,9 @@ class BookTest extends TestCase
     public function test_example_show_with_authenticated_user()
     {
         $user = User::factory()->create();
-        $response = $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'password',
-        ]);
-        $response = $this->assertAuthenticated();
+       
         Storage::fake('avatars');
-        $response = $this->actingAs($user)->post('/books', [
+        $book = Book::create([
             'title' => 'demo',
             'author' => 'demo',
             'image' => UploadedFile::fake()->image('avatar.jpg'),
@@ -171,22 +155,17 @@ class BookTest extends TestCase
             'is_active' => 0,
             'stock' => '50',
         ]);
-        $response->assertStatus(200);
-        $book=Book::first();
+        // $this->assertCount(1, Book::all());
         $response = $this->actingAs($user)->get('/books/'.$book->id);
+        $response->assertViewHas('book');
+        $response->assertSeeText('demo');
         $response->assertOk();
     }
 
     public function test_example_show_with_unauthenticated_user()
     {
-        $user = User::factory()->create();
-        $response = $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'password',
-        ]);
-        $response = $this->assertAuthenticated();
         Storage::fake('avatars');
-        $response = $this->actingAs($user)->post('/books', [
+        $book = Book::create([
             'title' => 'demo',
             'author' => 'demo',
             'image' => UploadedFile::fake()->image('avatar.jpg'),
@@ -197,10 +176,10 @@ class BookTest extends TestCase
             'is_active' => 0,
             'stock' => '50',
         ]);
-        $response->assertOk();
-        $this->post('logout');
-        $book=Book::first();
+
+
         $response = $this->get('/books/'.$book->id);
+        $response->assertDontSeeText('demo');
         $response->assertstatus(302);
        
     }
@@ -208,13 +187,13 @@ class BookTest extends TestCase
     public function test_example_update_with_authenticated_user()
     {
         $user = User::factory()->create();
-        $response = $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'password',
-        ]);
-        $response = $this->assertAuthenticated();
+        // $response = $this->post('/login', [
+        //     'email' => $user->email,
+        //     'password' => 'password',
+        // ]);
+        // $response = $this->assertAuthenticated();
         Storage::fake('avatars');
-        $response = $this->actingAs($user)->post('/books', [
+        $book = Book::create([
             'title' => 'demo',
             'author' => 'demo',
             'image' => UploadedFile::fake()->image('avatar.jpg'),
@@ -225,8 +204,6 @@ class BookTest extends TestCase
             'is_active' => 0,
             'stock' => '50',
         ]);
-        $response->assertOk();
-        $book=Book::first();
         $response = $this->actingAs($user)->patch('/books/'.$book->id, [
             'title' => 'demooooooo',
             'author' => 'demoooo',
@@ -241,19 +218,14 @@ class BookTest extends TestCase
        
         $this->assertEquals('demooooooo', Book::first()->title);
         $this->assertEquals('demoooo', Book::first()->author);
+        $response->assertSeeText('demoooo');
         $response->assertStatus(200);
         
     }
     public function test_example_update_with_unauthenticated_user()
     {
-        $user = User::factory()->create();
-        $response = $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'password',
-        ]);
-        $response = $this->assertAuthenticated();
         Storage::fake('avatars');
-        $response = $this->actingAs($user)->post('/books', [
+        $book = Book::create([
             'title' => 'demo',
             'author' => 'demo',
             'image' => UploadedFile::fake()->image('avatar.jpg'),
@@ -264,10 +236,6 @@ class BookTest extends TestCase
             'is_active' => 0,
             'stock' => '50',
         ]);
-        $response->assertOk();
-        $book=Book::first();
-       
-        $response = $this->post('logout');
 
         $response = $this->patch('/books/'.$book->id, [
             'title' => 'demooooooo',
@@ -280,6 +248,7 @@ class BookTest extends TestCase
             'is_active' => 0,
             'stock' => '50',
         ]);
+        $response->assertDontSeeText('demoooo','demooooooo');
         $response->assertStatus(302);
     }
 

@@ -38,9 +38,9 @@ class BookController extends Controller
         
     }
 
-    public function show(Book $Book)
+    public function show(Book $book)
     {
-        return view('welcome');
+        return view('welcome', compact('book'));
     }
 
 
@@ -49,7 +49,7 @@ class BookController extends Controller
         return view('Books.edit',compact('Book'));
     }
 
-    public function update(Request $request, Book $Book)
+    public function update(Request $request, Book $book)
     {
         $data = request()->validate([
             'title' => 'required',
@@ -63,8 +63,9 @@ class BookController extends Controller
             'stock' => 'required',
         ]);
 
-        $Book->update($data);
-        return view('welcome');
+        $book->update($data);
+        
+        return view('welcome',compact('book'));
         
     }
 

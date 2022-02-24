@@ -20,11 +20,17 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+
 Route::resource('stocks', StockController::class);
-Route::resource('books', BookController::class)->middleware(['auth']);
+
+
+Route::middleware('auth')->group(function(){
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+    
+    Route::resource('books', BookController::class);
+});
 
 
 
